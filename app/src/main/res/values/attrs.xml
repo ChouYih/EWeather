@@ -1,0 +1,8 @@
+<resources>
+    <declare-styleable name="Theme">
+        <attr name="motionEasingStandard" format="string" />
+        <attr name="motionEasingEmphasized" format="string" />
+        <attr name="motionEasingDecelerated" format="string" />
+        <attr name="motionEasingAccelerated" format="string" />
+    </declare-styleable>
+</resources>

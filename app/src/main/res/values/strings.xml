@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">EWeather</string>
+    <string name="weather_icon">Weather Icon</string>
+    <string name="refresh">Refresh</string>
+    <string name="change_city">Change City</string>
+    <string name="future_6h_weather">Future 6h Weather</string>
+    <string name="future_7_days_weather">Future 7 Days Weather</string>
+</resources>

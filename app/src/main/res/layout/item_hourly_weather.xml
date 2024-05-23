@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:padding="8dp"
+              android:gravity="center_vertical">
+
+    <!-- 时间 -->
+    <TextView
+            android:id="@+id/textView_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="12:00"
+            android:gravity="left|center_vertical"
+            android:paddingRight="16dp" />
+
+    <!-- 天气图标 -->
+    <ImageView
+            android:id="@+id/imageView_item_weather_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_weather_placeholder"
+            android:contentDescription="@string/weather_icon"
+            android:paddingRight="16dp"
+            android:layout_gravity="center_vertical" />
+
+    <!-- 天气情况 -->
+    <TextView
+            android:id="@+id/textView_item_weather"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sunny"
+            android:gravity="left|center_vertical"
+            android:paddingRight="16dp" />
+
+    <!-- 温度 -->
+    <TextView
+            android:id="@+id/textView_item_temperature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="25°C"
+            android:gravity="right|center_vertical" />
+</LinearLayout>

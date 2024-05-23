@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/scrollView_weather"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:scrollbars="none">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <!-- 今日天气情况 -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@drawable/border"
+                android:layout_marginBottom="16dp">
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="8dp"
+                    android:gravity="center_vertical">
+
+                <!-- 刷新按钮 -->
+                <ImageView
+                        android:id="@+id/button_refresh"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_refresh"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="@string/refresh"
+                        android:padding="4dp"
+                        android:scaleType="centerInside"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true" />
+
+                <!-- 切换城市按钮 -->
+                <ImageView
+                        android:id="@+id/button_change_city"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_change_city"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="@string/change_city"
+                        android:padding="4dp"
+                        android:scaleType="centerInside"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+
+                <!-- 地点 -->
+                <TextView
+                        android:id="@+id/textView_city"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="City Name"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:layout_centerInParent="true"
+                        android:gravity="center" />
+            </RelativeLayout>
+
+            <!-- 天气图标 -->
+            <ImageView
+                    android:id="@+id/imageView_weather_icon"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_weather_placeholder"
+                    android:contentDescription="@string/weather_icon" />
+
+            <!-- 天气 -->
+            <TextView
+                    android:id="@+id/textView_weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sunny"
+                    android:textSize="24sp"
+                    android:layout_gravity="center"
+                    android:paddingTop="8dp" />
+
+            <!-- 温度 -->
+            <TextView
+                    android:id="@+id/textView_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="25°C"
+                    android:textSize="48sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    android:paddingTop="8dp" />
+
+            <!-- 天气描述 -->
+            <TextView
+                    android:id="@+id/textView_weather_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A clear and sunny day"
+                    android:textSize="18sp"
+                    android:layout_gravity="center"
+                    android:paddingTop="8dp" />
+        </LinearLayout>
+
+        <!-- 未来6小时天气情况 -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@drawable/border"
+                android:layout_marginBottom="16dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="未来 6 小时 天气情况"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="8dp" />
+
+            <ListView
+                    android:id="@+id/listView_hourly"
+                    android:layout_width="match_parent"
+                    android:layout_height="360dp"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="1dp"
+                    android:scrollbars="none" />
+        </LinearLayout>
+
+        <!-- 未来7天天气情况 -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@drawable/border"
+                android:layout_marginBottom="16dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="未来 7 天 天气情况"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="8dp" />
+
+            <ListView
+                    android:id="@+id/listView_daily"
+                    android:layout_width="match_parent"
+                    android:layout_height="420dp"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="1dp"
+                    android:scrollbars="none" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
