@@ -1,5 +1,6 @@
 package com.yihchou.eweather;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,8 +30,8 @@ public class WeatherFragment extends Fragment {
     private static final String BASE_URL = "https://devapi.qweather.com";
     public static final String GEO_BASE_URL = "https://geoapi.qweather.com";
     public static final String API_KEY = "1bcd852c37b445ba931e37a46405e2ea";
-    private static final String AMAP_BASE_URL = "https://restapi.amap.com";
-    private static final String AMAP_API_KEY = "57ebc1c69c2ae413a3be870084e37481";
+    public static final String AMAP_BASE_URL = "https://restapi.amap.com";
+    public static final String AMAP_API_KEY = "57ebc1c69c2ae413a3be870084e37481";
 
     // UI 元素
     private TextView textViewCity;
@@ -87,8 +88,12 @@ public class WeatherFragment extends Fragment {
 
         buttonChangeCity.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), SearchCityActivity.class);
+            intent.putExtra("nowLocation", nowLocation);
+            intent.putExtra("cityName", cityName);
             startActivityForResult(intent, 1);
         });
+
+
 
 
         return view;
@@ -359,6 +364,16 @@ public class WeatherFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> scrollViewWeather.smoothScrollTo(0, 0), 100);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+            nowLocation = data.getStringExtra("nowLocation");
+            cityName = data.getStringExtra("cityName");
+            textViewCity.setText(cityName);
+            refreshWeatherData(nowLocation);
+        }
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();

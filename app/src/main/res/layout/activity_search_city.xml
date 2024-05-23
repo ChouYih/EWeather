@@ -5,21 +5,47 @@
               android:orientation="vertical"
               android:padding="16dp">
 
+    <!-- EditText 用于输入城市名称 -->
     <EditText
             android:id="@+id/editText_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="输入城市名称" />
+            android:hint="输入城市名称"
+            android:inputType="text" android:minHeight="48dp"/>
 
-    <Button
-            android:id="@+id/button_search"
-            android:layout_width="wrap_content"
+    <!-- 水平线性布局包含两个按钮 -->
+    <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="搜索" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="16dp">
 
+        <!-- 搜索按钮 -->
+        <Button
+                android:id="@+id/button_search"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="搜索" />
+
+        <!-- 使用当前位置按钮 -->
+        <Button
+                android:id="@+id/button_use_location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="使用当前位置"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp" />
+    </LinearLayout>
+
+    <!-- ListView 用于显示搜索结果 -->
     <ListView
             android:id="@+id/listView_cities"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp" />
 </LinearLayout>

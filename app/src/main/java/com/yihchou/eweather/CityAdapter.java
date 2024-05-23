@@ -40,7 +40,11 @@ public class CityAdapter extends BaseAdapter {
         }
 
         TextView textViewCityName = convertView.findViewById(R.id.textView_city_name);
-        textViewCityName.setText(cityList.get(position).name);
+        TextView textViewAdm1 = convertView.findViewById(R.id.textView_adm1);
+
+        LocationResponse.Location city = cityList.get(position);
+        textViewCityName.setText(city.name);
+        textViewAdm1.setText(city.adm1);
 
         return convertView;
     }
