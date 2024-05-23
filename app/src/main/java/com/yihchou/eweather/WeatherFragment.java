@@ -373,6 +373,14 @@ public class WeatherFragment extends Fragment {
             refreshWeatherData(nowLocation);
         }
     }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            scrollToTop();
+        }
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
