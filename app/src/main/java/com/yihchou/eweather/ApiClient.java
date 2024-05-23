@@ -10,20 +10,20 @@ public class ApiClient {
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient(String baseUrl) {
-        if (retrofit == null) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(loggingInterceptor)
-                    .build();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
 
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
+        retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
         return retrofit;
     }
 }
+

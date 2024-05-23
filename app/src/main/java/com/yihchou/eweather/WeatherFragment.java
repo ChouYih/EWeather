@@ -11,6 +11,7 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -24,10 +25,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class WeatherFragment extends Fragment {
-
     private static final String BASE_URL = "https://devapi.qweather.com";
+    private static final String GEO_BASE_URL = "https://geoapi.qweather.com";
     private static final String API_KEY = "1bcd852c37b445ba931e37a46405e2ea";
+    private static final String AMAP_BASE_URL = "https://restapi.amap.com";
+    private static final String AMAP_API_KEY = "57ebc1c69c2ae413a3be870084e37481";
 
+    // UI 元素
     private TextView textViewCity;
     private ImageView imageViewWeatherIcon;
     private TextView textViewWeather;
@@ -37,16 +41,17 @@ public class WeatherFragment extends Fragment {
     private ImageView buttonChangeCity;
     private ListView listViewHourly;
     private ListView listViewDaily;
-
     private ScrollView scrollViewWeather;
-
     private ExecutorService executorService;
+
+    private  String cityName = "NULL";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_weather, container, false);
 
+        // 初始化UI元素
         textViewCity = view.findViewById(R.id.textView_city);
         imageViewWeatherIcon = view.findViewById(R.id.imageView_weather_icon);
         textViewWeather = view.findViewById(R.id.textView_weather);
@@ -60,10 +65,12 @@ public class WeatherFragment extends Fragment {
 
         executorService = Executors.newFixedThreadPool(3);
 
+
+
         buttonRefresh.setOnClickListener(v -> refreshWeatherData("101081213")); // 示例 Location ID
 
         // 初始化天气数据
-        refreshWeatherData("101191203");
+        getIpLocation();
 
         listViewHourly.setOnItemClickListener((parent, view1, position, id) -> {
             HourlyWeatherResponse.Hourly hourlyWeather = (HourlyWeatherResponse.Hourly) parent.getItemAtPosition(position);
@@ -75,89 +82,68 @@ public class WeatherFragment extends Fragment {
             showDailyWeatherDetail(dailyWeather);
         });
 
-
         return view;
     }
 
-    private void showHourlyWeatherDetail(HourlyWeatherResponse.Hourly hourlyWeather) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_weather_detail, null);
-        builder.setView(dialogView);
 
-        ImageView weatherIcon = dialogView.findViewById(R.id.imageView_weather_icon);
-        TextView weatherDetails = dialogView.findViewById(R.id.textView_weather_details);
+    private void getIpLocation() {
+        AmapApi amapService = ApiClient.getClient(AMAP_BASE_URL).create(AmapApi.class);
+        Call<IpLocationResponse> call = amapService.getIpLocation(AMAP_API_KEY);
 
-        String iconName = "file:///android_asset/weather_icons_2/" + hourlyWeather.icon + ".png";
-        Glide.with(getContext())
-                .load(iconName)
-                .into(weatherIcon);
-
-        String message = "Time: " + hourlyWeather.fxTime + "\n" +
-                "Temperature: " + hourlyWeather.temp + "°C\n" +
-                "Description: " + hourlyWeather.text + "\n" +
-                "Wind: " + hourlyWeather.windDir + " " + hourlyWeather.windSpeed + " km/h\n" +
-                "Humidity: " + hourlyWeather.humidity + "%\n" +
-                "Pressure: " + hourlyWeather.pressure + " hPa";
-
-        weatherDetails.setText(message);
-
-        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
-        builder.show();
-    }
-
-
-
-    private void showDailyWeatherDetail(DailyWeatherResponse.Daily dailyWeather) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_weather_detail, null);
-        builder.setView(dialogView);
-
-        ImageView weatherIcon = dialogView.findViewById(R.id.imageView_weather_icon);
-        TextView weatherDetails = dialogView.findViewById(R.id.textView_weather_details);
-
-        String iconName = "file:///android_asset/weather_icons_2/" + dailyWeather.iconDay + ".png";
-        Glide.with(getContext())
-                .load(iconName)
-                .into(weatherIcon);
-
-        String message = "Date: " + dailyWeather.fxDate + "\n" +
-                "Max Temperature: " + dailyWeather.tempMax + "°C\n" +
-                "Min Temperature: " + dailyWeather.tempMin + "°C\n" +
-                "Daytime: " + dailyWeather.textDay + "\n" +
-                "Nighttime: " + dailyWeather.textNight + "\n" +
-                "Wind: " + dailyWeather.windDirDay + " " + dailyWeather.windSpeedDay + " km/h\n" +
-                "Humidity: " + dailyWeather.humidity + "%\n" +
-                "Pressure: " + dailyWeather.pressure + " hPa";
-
-        weatherDetails.setText(message);
-
-        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
-        builder.show();
-    }
-
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        call.enqueue(new Callback<IpLocationResponse>() {
             @Override
-            public void onGlobalLayout() {
-                scrollViewWeather.post(() -> scrollViewWeather.smoothScrollTo(0, 0));
-                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            public void onResponse(Call<IpLocationResponse> call, Response<IpLocationResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    IpLocationResponse ipLocationResponse = response.body();
+                    if ("1".equals(ipLocationResponse.status)) {
+                        searchLocationByAdcode(ipLocationResponse.adcode);
+                        cityName = ipLocationResponse.city;
+                    } else {
+                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "获取IP定位信息失败", Toast.LENGTH_SHORT).show());
+                    }
+                } else {
+                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "获取IP定位信息失败", Toast.LENGTH_SHORT).show());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<IpLocationResponse> call, Throwable t) {
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+                    Log.e("WeatherFragment", "Network error", t);
+                });
             }
         });
     }
 
+    private void searchLocationByAdcode(String adcode) {
+        GeoApi geoService = ApiClient.getClient(GEO_BASE_URL).create(GeoApi.class);
+        Call<LocationResponse> call = geoService.getCityLocation(adcode, API_KEY);
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
+        call.enqueue(new Callback<LocationResponse>() {
+            @Override
+            public void onResponse(Call<LocationResponse> call, Response<LocationResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<LocationResponse.Location> locations = response.body().location;
+                    if (locations != null && !locations.isEmpty()) {
+                        String locationId = locations.get(0).id;
+                        refreshWeatherData(locationId);
+                    } else {
+                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "未找到相关城市", Toast.LENGTH_SHORT).show());
+                    }
+                } else {
+                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "获取城市信息失败", Toast.LENGTH_SHORT).show());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LocationResponse> call, Throwable t) {
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+                    Log.e("WeatherFragment", "Network error", t);
+                });
+            }
+        });
     }
 
     private void refreshWeatherData(String location) {
@@ -257,7 +243,7 @@ public class WeatherFragment extends Fragment {
         RealTimeWeatherResponse.Now now = weatherResponse.now;
 
         // 更新UI组件
-        textViewCity.setText("北京"); // 根据需要更改为动态获取的城市名称
+        textViewCity.setText(cityName);
         textViewWeather.setText(now.weatherDescription);
         textViewTemperature.setText(now.temperature + "°C");
         textViewWeatherDescription.setText(now.weatherDescription);
@@ -279,4 +265,69 @@ public class WeatherFragment extends Fragment {
         listViewDaily.setAdapter(adapter);
     }
 
+    private void showHourlyWeatherDetail(HourlyWeatherResponse.Hourly hourlyWeather) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_weather_detail, null);
+        builder.setView(dialogView);
+
+        ImageView weatherIcon = dialogView.findViewById(R.id.imageView_weather_icon);
+        TextView weatherDetails = dialogView.findViewById(R.id.textView_weather_details);
+
+        String iconName = "file:///android_asset/weather_icons_2/" + hourlyWeather.icon + ".png";
+        Glide.with(getContext())
+                .load(iconName)
+                .into(weatherIcon);
+
+        String message = "Time: " + hourlyWeather.fxTime + "\n" +
+                "Temperature: " + hourlyWeather.temp + "°C\n" +
+                "Description: " + hourlyWeather.text + "\n" +
+                "Wind: " + hourlyWeather.windDir + " " + hourlyWeather.windSpeed + " km/h\n" +
+                "Humidity: " + hourlyWeather.humidity + "%\n" +
+                "Pressure: " + hourlyWeather.pressure + " hPa";
+
+        weatherDetails.setText(message);
+
+        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+    private void showDailyWeatherDetail(DailyWeatherResponse.Daily dailyWeather) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_weather_detail, null);
+        builder.setView(dialogView);
+
+        ImageView weatherIcon = dialogView.findViewById(R.id.imageView_weather_icon);
+        TextView weatherDetails = dialogView.findViewById(R.id.textView_weather_details);
+
+        String iconName = "file:///android_asset/weather_icons_2/" + dailyWeather.iconDay + ".png";
+        Glide.with(getContext())
+                .load(iconName)
+                .into(weatherIcon);
+
+        String message = "Date: " + dailyWeather.fxDate + "\n" +
+                "Max Temperature: " + dailyWeather.tempMax + "°C\n" +
+                "Min Temperature: " + dailyWeather.tempMin + "°C\n" +
+                "Daytime: " + dailyWeather.textDay + "\n" +
+                "Nighttime: " + dailyWeather.textNight + "\n" +
+                "Wind: " + dailyWeather.windDirDay + " " + dailyWeather.windSpeedDay + " km/h\n" +
+                "Humidity: " + dailyWeather.humidity + "%\n" +
+                "Pressure: " + dailyWeather.pressure + " hPa";
+
+        weatherDetails.setText(message);
+
+        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
+    }
 }
+
