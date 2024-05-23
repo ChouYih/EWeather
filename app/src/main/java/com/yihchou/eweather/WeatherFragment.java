@@ -1,5 +1,6 @@
 package com.yihchou.eweather;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -7,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.*;
 
 import androidx.annotation.NonNull;
@@ -27,8 +27,8 @@ import retrofit2.Response;
 
 public class WeatherFragment extends Fragment {
     private static final String BASE_URL = "https://devapi.qweather.com";
-    private static final String GEO_BASE_URL = "https://geoapi.qweather.com";
-    private static final String API_KEY = "1bcd852c37b445ba931e37a46405e2ea";
+    public static final String GEO_BASE_URL = "https://geoapi.qweather.com";
+    public static final String API_KEY = "1bcd852c37b445ba931e37a46405e2ea";
     private static final String AMAP_BASE_URL = "https://restapi.amap.com";
     private static final String AMAP_API_KEY = "57ebc1c69c2ae413a3be870084e37481";
 
@@ -83,7 +83,13 @@ public class WeatherFragment extends Fragment {
             showDailyWeatherDetail(dailyWeather);
         });
 
-        buttonRefresh.setOnClickListener(v -> refreshWeatherData(nowLocation)); // 示例 Location ID
+        buttonRefresh.setOnClickListener(v -> refreshWeatherData(nowLocation));
+
+        buttonChangeCity.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), SearchCityActivity.class);
+            startActivityForResult(intent, 1);
+        });
+
 
         return view;
     }
