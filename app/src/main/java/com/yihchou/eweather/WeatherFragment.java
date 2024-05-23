@@ -318,16 +318,15 @@ public class WeatherFragment extends Fragment {
                 .load(iconName)
                 .into(weatherIcon);
 
-        String message = "Time: " + hourlyWeather.fxTime + "\n" +
-                "Temperature: " + hourlyWeather.temp + "°C\n" +
-                "Description: " + hourlyWeather.text + "\n" +
-                "Wind: " + hourlyWeather.windDir + " " + hourlyWeather.windSpeed + " km/h\n" +
-                "Humidity: " + hourlyWeather.humidity + "%\n" +
-                "Pressure: " + hourlyWeather.pressure + " hPa";
+        String message = "温度: " + hourlyWeather.temp + "°C\n" +
+                "天气: " + hourlyWeather.text + "\n" +
+                "风: " + hourlyWeather.windDir + " " + hourlyWeather.windSpeed + " km/h\n" +
+                "湿度: " + hourlyWeather.humidity + "%\n" +
+                "气压: " + hourlyWeather.pressure + " hPa";
 
         weatherDetails.setText(message);
 
-        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+        builder.setPositiveButton("了解", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
 
@@ -345,14 +344,14 @@ public class WeatherFragment extends Fragment {
                 .load(iconName)
                 .into(weatherIcon);
 
-        String message = "Date: " + dailyWeather.fxDate + "\n" +
-                "Max Temperature: " + dailyWeather.tempMax + "°C\n" +
-                "Min Temperature: " + dailyWeather.tempMin + "°C\n" +
-                "Daytime: " + dailyWeather.textDay + "\n" +
-                "Nighttime: " + dailyWeather.textNight + "\n" +
-                "Wind: " + dailyWeather.windDirDay + " " + dailyWeather.windSpeedDay + " km/h\n" +
-                "Humidity: " + dailyWeather.humidity + "%\n" +
-                "Pressure: " + dailyWeather.pressure + " hPa";
+        String message = "日期: " + dailyWeather.fxDate + "\n" +
+                "最高温度: " + dailyWeather.tempMax + "°C\n" +
+                "最低温度: " + dailyWeather.tempMin + "°C\n" +
+                "日间天气: " + dailyWeather.textDay + "\n" +
+                "夜间天气: " + dailyWeather.textNight + "\n" +
+                "风: " + dailyWeather.windDirDay + " " + dailyWeather.windSpeedDay + " km/h\n" +
+                "湿度: " + dailyWeather.humidity + "%\n" +
+                "气压: " + dailyWeather.pressure + " hPa";
 
         weatherDetails.setText(message);
 
