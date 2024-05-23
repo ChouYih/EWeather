@@ -2,12 +2,88 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:gravity="center"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              android:padding="16dp"
+              android:gravity="center">
 
     <TextView
+            android:id="@+id/textView_song_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Music Fragment"
-            android:textSize="24sp" />
+            android:text="Song Title"
+            android:textSize="24sp"
+            android:layout_marginBottom="16dp"
+            android:textStyle="bold" />
+
+    <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+        <TextView
+                android:id="@+id/textView_current_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00" />
+
+        <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+        <TextView
+                android:id="@+id/textView_total_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00" />
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+        <Button
+                android:id="@+id/button_previous"
+                android:layout_width="44dp"
+                android:layout_height="wrap_content"
+                android:text="Previous"/>
+
+        <Button
+                android:id="@+id/button_rewind"
+                android:layout_width="50dp"
+                android:layout_height="142dp"
+                android:text="Rewind"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"/>
+
+        <Button
+                android:id="@+id/button_play_pause"
+                android:layout_width="45dp"
+                android:layout_height="139dp"
+                android:text="Play"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"/>
+        <Button
+                android:id="@+id/button_fast_forward"
+                android:layout_width="27dp"
+                android:layout_height="wrap_content"
+                android:text="Fast Forward"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"/>
+        <Button
+                android:id="@+id/button_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Next" />
+    </LinearLayout>
 </LinearLayout>
