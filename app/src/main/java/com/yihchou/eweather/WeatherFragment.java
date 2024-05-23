@@ -1,6 +1,8 @@
 package com.yihchou.eweather;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,6 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -43,7 +44,7 @@ public class WeatherFragment extends Fragment {
     private ListView listViewDaily;
     private ScrollView scrollViewWeather;
     private ExecutorService executorService;
-
+    private  String nowLocation;
     private  String cityName = "NULL";
 
     @Nullable
@@ -67,7 +68,7 @@ public class WeatherFragment extends Fragment {
 
 
 
-        buttonRefresh.setOnClickListener(v -> refreshWeatherData("101081213")); // 示例 Location ID
+
 
         // 初始化天气数据
         getIpLocation();
@@ -82,8 +83,30 @@ public class WeatherFragment extends Fragment {
             showDailyWeatherDetail(dailyWeather);
         });
 
+        buttonRefresh.setOnClickListener(v -> refreshWeatherData(nowLocation)); // 示例 Location ID
+
         return view;
     }
+
+//    @Override
+//    public void onViewCreated(View view, Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//
+//        // 找到ScrollView
+//        final ScrollView scrollView = view.findViewById(R.id.scrollView_weather);
+//
+//        // 添加全局布局监听器
+//        scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                // 滚动到顶部
+//                scrollView.scrollTo(0, 0);
+//
+//                // 移除监听器以避免重复调用
+//                scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//            }
+//        });
+//    }
 
 
     private void getIpLocation() {
@@ -128,6 +151,7 @@ public class WeatherFragment extends Fragment {
                     if (locations != null && !locations.isEmpty()) {
                         String locationId = locations.get(0).id;
                         refreshWeatherData(locationId);
+                        nowLocation = locationId;
                     } else {
                         getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "未找到相关城市", Toast.LENGTH_SHORT).show());
                     }
@@ -150,6 +174,7 @@ public class WeatherFragment extends Fragment {
         executorService.execute(() -> getCurrentWeather(location));
         executorService.execute(() -> getHourlyWeather(location));
         executorService.execute(() -> getDailyWeather(location));
+        scrollToTop();
     }
 
     private void getCurrentWeather(String location) {
@@ -163,6 +188,7 @@ public class WeatherFragment extends Fragment {
                     RealTimeWeatherResponse weatherResponse = response.body();
                     if (weatherResponse.now != null) {
                         getActivity().runOnUiThread(() -> updateCurrentWeatherUI(weatherResponse));
+//                        scrollToTop();
                     } else {
                         getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "天气数据为空", Toast.LENGTH_SHORT).show());
                     }
@@ -192,6 +218,7 @@ public class WeatherFragment extends Fragment {
                     HourlyWeatherResponse hourlyWeatherResponse = response.body();
                     if (hourlyWeatherResponse.hourly != null) {
                         getActivity().runOnUiThread(() -> updateHourlyWeatherUI(hourlyWeatherResponse.hourly.subList(0, 6))); // 获取未来6小时天气数据
+//                        scrollToTop();
                     } else {
                         getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "逐小时天气数据为空", Toast.LENGTH_SHORT).show());
                     }
@@ -221,6 +248,7 @@ public class WeatherFragment extends Fragment {
                     DailyWeatherResponse dailyWeatherResponse = response.body();
                     if (dailyWeatherResponse.daily != null) {
                         getActivity().runOnUiThread(() -> updateDailyWeatherUI(dailyWeatherResponse.daily));
+//                        scrollToTop();
                     } else {
                         getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "未来7天天气数据为空", Toast.LENGTH_SHORT).show());
                     }
@@ -321,6 +349,9 @@ public class WeatherFragment extends Fragment {
         builder.show();
     }
 
+    private void scrollToTop() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> scrollViewWeather.smoothScrollTo(0, 0), 100);
+    }
 
     @Override
     public void onDestroy() {
