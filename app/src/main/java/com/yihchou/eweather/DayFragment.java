@@ -83,13 +83,13 @@ public class DayFragment extends Fragment {
 
     private void showEditDialog(final int scheduleIndex) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Edit Schedule");
+        builder.setTitle("编辑日程");
 
         final EditText input = new EditText(getContext());
         input.setText(scheduleTextViews[scheduleIndex].getText());
         builder.setView(input);
 
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newSchedule = input.getText().toString();
@@ -97,7 +97,7 @@ public class DayFragment extends Fragment {
                 updateScheduleInDatabase(scheduleIndex, newSchedule);
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();

@@ -110,7 +110,7 @@ public class MonthFragment extends Fragment {
 
     private void showDayScheduleDialog(final String date) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Schedule for " + date);
+        builder.setTitle(date + " 当日日程");
 
         ScrollView scrollView = new ScrollView(getContext());
         TableLayout scheduleTable = new TableLayout(getContext());
@@ -127,7 +127,7 @@ public class MonthFragment extends Fragment {
         }
 
         builder.setView(scrollView);
-        builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("关闭", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -139,7 +139,9 @@ public class MonthFragment extends Fragment {
     private TextView createScheduleCell(String text, final String date, final int scheduleIndex) {
         TextView textView = new TextView(getContext());
         textView.setText(text);
+        textView.setGravity(Gravity.CENTER);
         textView.setPadding(8, 8, 8, 8);
+        textView.setBackgroundResource(R.drawable.border);
         textView.setLayoutParams(new TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT, 1f));
@@ -154,13 +156,13 @@ public class MonthFragment extends Fragment {
 
     private void showEditDialog(final String date, final int scheduleIndex, final TextView textView) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Edit Schedule");
+        builder.setTitle("编辑日程");
 
         final EditText input = new EditText(getContext());
         input.setText(textView.getText());
         builder.setView(input);
 
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newSchedule = input.getText().toString();
@@ -168,7 +170,7 @@ public class MonthFragment extends Fragment {
                 updateScheduleInDatabase(date, scheduleIndex, newSchedule);
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
