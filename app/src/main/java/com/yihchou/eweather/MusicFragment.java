@@ -15,9 +15,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -103,7 +105,42 @@ public class MusicFragment extends Fragment {
     };
 
     private void onSongInfoClicked() {
-        // Handle song info button click
+        showSongInfoDialog();
+    }
+
+    private void showSongInfoDialog() {
+        if (currentSongUri == null) {
+            Toast.makeText(getContext(), "当前没有正在播放的歌曲", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String songInfo = getSongInfo(currentSongUri);
+        new AlertDialog.Builder(getContext())
+                .setTitle("歌曲信息")
+                .setMessage(songInfo)
+                .setPositiveButton("确定", null)
+                .show();
+    }
+
+    private String getSongInfo(Uri uri) {
+        StringBuilder result = new StringBuilder();
+        if (uri.getScheme().equals("content")) {
+            try (Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+                    if (nameIndex != -1) {
+                        String displayName = cursor.getString(nameIndex);
+                        result.append("文件名: ").append(displayName).append("\n");
+                    }
+                    if (sizeIndex != -1) {
+                        String size = cursor.getString(sizeIndex);
+                        result.append("文件大小: ").append(size).append(" bytes\n");
+                    }
+                }
+            }
+        }
+        return result.toString();
     }
 
     private void openPlaylistActivity() {
@@ -206,5 +243,4 @@ public class MusicFragment extends Fragment {
         handler.removeCallbacks(updateSeekBar);
     }
 }
-
 
