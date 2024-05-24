@@ -5,4 +5,13 @@
     <string name="change_city">Change City</string>
     <string name="future_6h_weather">Future 6h Weather</string>
     <string name="future_7_days_weather">Future 7 Days Weather</string>
+    <string name="music_title"/>
+    <string name="album_art"/>
+    <string name="playlist"/>
+    <string name="song_info"/>
+    <string name="previous"/>
+    <string name="rewind"/>
+    <string name="play_pause"/>
+    <string name="fast_forward"/>
+    <string name="next"/>
 </resources>

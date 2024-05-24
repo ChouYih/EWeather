@@ -1,107 +1,72 @@
 package com.yihchou.eweather;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
+
+import android.content.Intent;
+import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MusicFragment extends Fragment {
 
-    private static final int REQUEST_PERMISSION_STORAGE = 100;
-    private MediaPlayer mediaPlayer;
-    private Handler handler = new Handler();
+    private static final int REQUEST_CODE_PLAYLIST = 2;
+    private ImageView btnSongInfo, btnPlaylist, imgAlbumArt;
+    private ImageView btnPrevious, btnRewind, btnPlayPause, btnForward, btnNext;
+    private TextView tvSongInfo;
     private SeekBar seekBar;
-    private TextView textViewCurrentTime, textViewTotalTime, textViewSongTitle;
-    private Button buttonPlayPause, buttonNext, buttonPrevious, buttonFastForward, buttonRewind;
-    private List<File> songList;
+    private MediaPlayer mediaPlayer;
+    private Uri currentSongUri;
+    private ArrayList<Uri> songUriList = new ArrayList<>();
     private int currentSongIndex = 0;
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_music, container, false);
 
-        seekBar = view.findViewById(R.id.seekBar);
-        textViewCurrentTime = view.findViewById(R.id.textView_current_time);
-        textViewTotalTime = view.findViewById(R.id.textView_total_time);
-        textViewSongTitle = view.findViewById(R.id.textView_song_title);
-        buttonPlayPause = view.findViewById(R.id.button_play_pause);
-        buttonNext = view.findViewById(R.id.button_next);
-        buttonPrevious = view.findViewById(R.id.button_previous);
-        buttonFastForward = view.findViewById(R.id.button_fast_forward);
-        buttonRewind = view.findViewById(R.id.button_rewind);
+        // Initialize views
+        btnSongInfo = view.findViewById(R.id.btn_song_info);
+        btnPlaylist = view.findViewById(R.id.btn_playlist);
+        imgAlbumArt = view.findViewById(R.id.img_album_art);
+        tvSongInfo = view.findViewById(R.id.tv_song_info);
+        seekBar = view.findViewById(R.id.seekbar);
+        btnPrevious = view.findViewById(R.id.btn_previous);
+        btnRewind = view.findViewById(R.id.btn_rewind);
+        btnPlayPause = view.findViewById(R.id.btn_play_pause);
+        btnForward = view.findViewById(R.id.btn_forward);
+        btnNext = view.findViewById(R.id.btn_next);
 
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_STORAGE);
-        } else {
-            loadSongs();
-        }
-
-        return view;
-    }
-
-    private void loadSongs() {
-        songList = getSongsFromExternalStorage();
-
-        if (!songList.isEmpty()) {
-            setupMediaPlayer();
-            setupButtons();
-        } else {
-            Toast.makeText(getContext(), "No songs found on the device.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private List<File> getSongsFromExternalStorage() {
-        List<File> songs = new ArrayList<>();
-        File musicDir = new File("/storage/emulated/0/Music"); // 确保路径正确
-        if (musicDir.exists() && musicDir.isDirectory()) {
-            File[] files = musicDir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isFile() && file.getName().endsWith(".mp3")) {
-                        songs.add(file);
-                    }
-                }
-            }
-        }
-        return songs;
-    }
-
-    private void setupMediaPlayer() {
+        // Initialize MediaPlayer
         mediaPlayer = new MediaPlayer();
-        playSong(songList.get(currentSongIndex));
 
-        mediaPlayer.setOnCompletionListener(mp -> {
-            if (currentSongIndex < songList.size() - 1) {
-                currentSongIndex++;
-                playSong(songList.get(currentSongIndex));
-            } else {
-                mediaPlayer.seekTo(0);
-                mediaPlayer.pause();
-                buttonPlayPause.setText("Play");
-            }
-        });
+        // Set click listeners
+        btnSongInfo.setOnClickListener(v -> onSongInfoClicked());
+        btnPlaylist.setOnClickListener(v -> openPlaylistActivity());
+        btnPrevious.setOnClickListener(v -> onPreviousClicked());
+        btnRewind.setOnClickListener(v -> onRewindClicked());
+        btnPlayPause.setOnClickListener(v -> onPlayPauseClicked());
+        btnForward.setOnClickListener(v -> onForwardClicked());
+        btnNext.setOnClickListener(v -> onNextClicked());
 
+        // Set up the seekbar listener
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -112,77 +77,123 @@ public class MusicFragment extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                // handle seekbar start tracking
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                // handle seekbar stop tracking
             }
         });
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mediaPlayer != null) {
-                    seekBar.setProgress(mediaPlayer.getCurrentPosition());
-                    textViewCurrentTime.setText(formatTime(mediaPlayer.getCurrentPosition()));
-                }
-                handler.postDelayed(this, 1000);
-            }
-        });
+        // Update seekbar progress
+        handler.postDelayed(updateSeekBar, 1000);
+
+        return view;
     }
 
-    private void setupButtons() {
-        buttonPlayPause.setOnClickListener(v -> {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-                buttonPlayPause.setText("Play");
-            } else {
-                mediaPlayer.start();
-                buttonPlayPause.setText("Pause");
+    private final Runnable updateSeekBar = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                seekBar.setProgress(mediaPlayer.getCurrentPosition());
             }
-        });
+            handler.postDelayed(this, 1000);
+        }
+    };
 
-        buttonNext.setOnClickListener(v -> {
-            if (currentSongIndex < songList.size() - 1) {
-                currentSongIndex++;
-                playSong(songList.get(currentSongIndex));
-            }
-        });
-
-        buttonPrevious.setOnClickListener(v -> {
-            if (currentSongIndex > 0) {
-                currentSongIndex--;
-                playSong(songList.get(currentSongIndex));
-            }
-        });
-
-        buttonFastForward.setOnClickListener(v -> mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 5000));
-
-        buttonRewind.setOnClickListener(v -> mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 5000));
+    private void onSongInfoClicked() {
+        // Handle song info button click
     }
 
-    private void playSong(File song) {
+    private void openPlaylistActivity() {
+        Intent intent = new Intent(getActivity(), PlaylistActivity.class);
+        intent.putParcelableArrayListExtra("SONG_URIS", songUriList);
+        startActivityForResult(intent, REQUEST_CODE_PLAYLIST);
+    }
+
+    private void onPreviousClicked() {
+        if (currentSongIndex > 0) {
+            currentSongIndex--;
+            playSong(songUriList.get(currentSongIndex));
+        }
+    }
+
+    private void onRewindClicked() {
+        int newPosition = mediaPlayer.getCurrentPosition() - 15000;
+        mediaPlayer.seekTo(Math.max(newPosition, 0));
+    }
+
+    private void onPlayPauseClicked() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            btnPlayPause.setImageResource(R.drawable.ic_play_pause);
+        } else {
+            mediaPlayer.start();
+            btnPlayPause.setImageResource(R.drawable.ic_play_pause);
+        }
+    }
+
+    private void onForwardClicked() {
+        int newPosition = mediaPlayer.getCurrentPosition() + 15000;
+        mediaPlayer.seekTo(Math.min(newPosition, mediaPlayer.getDuration()));
+    }
+
+    private void onNextClicked() {
+        if (currentSongIndex < songUriList.size() - 1) {
+            currentSongIndex++;
+            playSong(songUriList.get(currentSongIndex));
+        }
+    }
+
+    private void playSong(Uri songUri) {
         try {
             mediaPlayer.reset();
-            mediaPlayer.setDataSource(song.getPath());
+            mediaPlayer.setDataSource(getContext(), songUri);
             mediaPlayer.prepare();
             mediaPlayer.start();
-
+            currentSongUri = songUri;
+            btnPlayPause.setImageResource(R.drawable.ic_play_pause);
+            tvSongInfo.setText(getFileName(songUri));
             seekBar.setMax(mediaPlayer.getDuration());
-            textViewTotalTime.setText(formatTime(mediaPlayer.getDuration()));
-            textViewSongTitle.setText(song.getName());
-
-            buttonPlayPause.setText("Pause");
-
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String formatTime(int milliseconds) {
-        int minutes = (milliseconds / 1000) / 60;
-        int seconds = (milliseconds / 1000) % 60;
-        return String.format("%02d:%02d", minutes, seconds);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_PLAYLIST && resultCode == AppCompatActivity.RESULT_OK) {
+            if (data != null) {
+                Uri songUri = Uri.parse(data.getStringExtra("SONG_URI"));
+                songUriList = data.getParcelableArrayListExtra("SONG_URIS");
+                currentSongIndex = songUriList.indexOf(songUri);
+                playSong(songUri);
+            }
+        }
+    }
+
+    private String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            try (Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (nameIndex != -1) {
+                        result = cursor.getString(nameIndex);
+                    }
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -192,18 +203,8 @@ public class MusicFragment extends Fragment {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        handler.removeCallbacksAndMessages(null);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                loadSongs();
-            } else {
-                Toast.makeText(getContext(), "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
-            }
-        }
+        handler.removeCallbacks(updateSeekBar);
     }
 }
+
+
