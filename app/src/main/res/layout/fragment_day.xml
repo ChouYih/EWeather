@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="16dp">
+
+    <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textSize="18sp"
+            android:paddingBottom="8dp"/>
+
+    <TextView
+            android:id="@+id/schedule1TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Schedule 1"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:background="@drawable/border"
+            android:layout_marginBottom="8dp"/>
+
+    <TextView
+            android:id="@+id/schedule2TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Schedule 2"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:background="@drawable/border"
+            android:layout_marginBottom="8dp"/>
+
+    <TextView
+            android:id="@+id/schedule3TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Schedule 3"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:background="@drawable/border"
+            android:layout_marginBottom="8dp"/>
+
+    <TextView
+            android:id="@+id/schedule4TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Schedule 4"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:background="@drawable/border"
+            android:layout_marginBottom="8dp"/>
+
+    <TextView
+            android:id="@+id/schedule5TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Schedule 5"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:background="@drawable/border"
+            android:layout_marginBottom="8dp"/>
+
+    <TextView
+            android:id="@+id/schedule6TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Schedule 6"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:background="@drawable/border"
+            android:layout_marginBottom="8dp"/>
+</LinearLayout>
