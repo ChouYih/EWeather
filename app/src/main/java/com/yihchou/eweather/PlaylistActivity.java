@@ -31,6 +31,11 @@ public class PlaylistActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
 
+        // 设置ActionBar标题
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("播放列表");
+        }
+
         btnAddSong = findViewById(R.id.btn_add_song);
         btnClearPlaylist = findViewById(R.id.btn_clear_playlist);
         lvSongs = findViewById(R.id.lv_songs);

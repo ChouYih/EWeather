@@ -15,5 +15,7 @@
         <item name="motionEasingEmphasized">cubic-bezier(0.4, 0.0, 0.2, 1)</item>
         <item name="motionEasingDecelerated">cubic-bezier(0.0, 0.0, 0.2, 1)</item>
         <item name="motionEasingAccelerated">cubic-bezier(0.4, 0.0, 1, 1)</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 </resources>
