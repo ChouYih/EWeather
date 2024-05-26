@@ -57,7 +57,7 @@ public class MusicFragment extends Fragment {
         btnNext = view.findViewById(R.id.btn_next);
 
         // Initialize MediaPlayer
-        mediaPlayer = new MediaPlayer();
+        mediaPlayer = new   MediaPlayer();
 
         // Set click listeners
         btnSongInfo.setOnClickListener(v -> onSongInfoClicked());
